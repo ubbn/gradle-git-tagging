@@ -11,15 +11,38 @@ package com.es.em.am.gradle.plugin.tagging;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
 import com.es.em.am.gradle.plugin.tagging.command.Executor;
 import com.es.em.am.gradle.plugin.tagging.command.Result;
 
+
 /**
  * @author eulzbay
  */
 public class Tag extends DefaultTask {
+	private final Property<Boolean> enabled;
+
+	public Tag() {
+		this.enabled = getProject().getObjects().property(Boolean.class);
+	}
+
+	public void setUrl(Boolean enabled) {
+		this.enabled.set(enabled);
+	}
+
+	public void setUrl(Provider<Boolean> enabled) {
+		this.enabled.set(enabled);
+	}
+
+	@Input
+	public boolean getUrl() {
+		return enabled.get();
+	}
+
 	@TaskAction
 	void run() {
 		System.out.println("Test");
@@ -29,6 +52,7 @@ public class Tag extends DefaultTask {
 					result.getError());
 		}
 
+		System.out.println(getProject().getProperties().containsKey("version"));
 		System.out.println(result.getOutput());
 	}
 }

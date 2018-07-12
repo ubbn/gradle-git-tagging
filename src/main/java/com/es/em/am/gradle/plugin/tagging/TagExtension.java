@@ -9,22 +9,24 @@
  */
 package com.es.em.am.gradle.plugin.tagging;
 
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.provider.Property;
 
 /**
  * @author eulzbay
  */
-public class TagPlugin implements Plugin<Project> {
+public class TagExtension {
+	private final Property<Boolean> enabled;
 
-	@Override
-	public void apply(Project project) {
-		Tag tag = project.getTasks().create("tag", Tag.class, task -> {
-			task.setDescription("Creates git tag from current version set in build file");
-		});
-		project.setDescription("Project description for gradle plugin");
+	public TagExtension(Project project) {
+		enabled = project.getObjects().property(Boolean.class);
+	}
 
-		TagExtension extension = project.getExtensions().create("tag", TagExtension.class, project);
-		tag.setEnabled(extension.isEnabled());
+	public boolean isEnabled() {
+		return enabled.get();
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled.set(enabled);
 	}
 }
