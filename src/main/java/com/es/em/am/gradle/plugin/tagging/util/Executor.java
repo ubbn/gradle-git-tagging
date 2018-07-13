@@ -7,7 +7,7 @@
  * which the program(s) have been supplied.
  *
  */
-package com.es.em.am.gradle.plugin.tagging.command;
+package com.es.em.am.gradle.plugin.tagging.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

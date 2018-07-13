@@ -14,7 +14,6 @@ package com.es.em.am.gradle.plugin.tagging;
  */
 public class TagExtension {
 	private String tagPrefix = "v";
-	private boolean active = true;
 
 	public String getTagPrefix() {
 		return tagPrefix;
@@ -22,13 +21,5 @@ public class TagExtension {
 
 	public void setTagPrefix(String tagPrefix) {
 		this.tagPrefix = tagPrefix;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
 	}
 }
