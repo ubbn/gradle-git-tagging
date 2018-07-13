@@ -9,24 +9,26 @@
  */
 package com.es.em.am.gradle.plugin.tagging;
 
-import org.gradle.api.Project;
-import org.gradle.api.provider.Property;
-
 /**
  * @author eulzbay
  */
 public class TagExtension {
-	private final Property<Boolean> enabled;
+	private String tagPrefix = "v";
+	private boolean active = true;
 
-	public TagExtension(Project project) {
-		enabled = project.getObjects().property(Boolean.class);
+	public String getTagPrefix() {
+		return tagPrefix;
 	}
 
-	public boolean isEnabled() {
-		return enabled.get();
+	public void setTagPrefix(String tagPrefix) {
+		this.tagPrefix = tagPrefix;
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled.set(enabled);
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }

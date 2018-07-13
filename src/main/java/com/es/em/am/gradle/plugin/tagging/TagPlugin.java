@@ -19,12 +19,8 @@ public class TagPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		Tag tag = project.getTasks().create("tag", Tag.class, task -> {
-			task.setDescription("Creates git tag from current version set in build file");
-		});
-		project.setDescription("Project description for gradle plugin");
-
-		TagExtension extension = project.getExtensions().create("tag", TagExtension.class, project);
-		tag.setEnabled(extension.isEnabled());
+		Tag tag = project.getTasks().create("tag", Tag.class);
+		tag.setDescription("Creates git tag from current version set in build file");
+		project.getExtensions().create("tag", TagExtension.class);
 	}
 }
