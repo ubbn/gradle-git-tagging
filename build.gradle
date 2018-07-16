@@ -16,14 +16,14 @@ dependencies {
 	)
 }
 
-test {
-	useJUnit {
-		includeCategories 'com.testwithspring.master.UnitTest'
-	}
-	testLogging {
-		showStandardStreams = true
-	}
-}
+//test {
+//	useJUnit {
+//		includeCategories 'com.testwithspring.master.UnitTest'
+//	}
+//	testLogging {
+//		showStandardStreams = true
+//	}
+//}
 
 //////////////////////////////////////////////////////
 

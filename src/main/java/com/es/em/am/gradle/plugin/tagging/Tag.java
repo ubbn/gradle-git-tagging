@@ -27,7 +27,7 @@ public class Tag extends DefaultTask {
 		if (!getProject().hasProperty("allowsnapshot") &&
 				version.toLowerCase().contains("snapshot".toLowerCase())) {
 			getLogger().quiet("Skipped git tagging as project version is snapshot: " + version +
-					", force tagging with option -Pallowsnaphot");
+					", force tajagging with option -Pallowsnapshot");
 			return;
 		}
 
