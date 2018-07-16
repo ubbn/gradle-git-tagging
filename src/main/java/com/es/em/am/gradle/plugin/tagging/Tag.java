@@ -11,7 +11,6 @@ package com.es.em.am.gradle.plugin.tagging;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
 import com.es.em.am.gradle.plugin.tagging.util.Executor;
@@ -23,26 +22,24 @@ import com.es.em.am.gradle.plugin.tagging.util.Result;
  */
 public class Tag extends DefaultTask {
 	@TaskAction
-	void act() {
+	void tag() {
+		String version = getProject().getVersion().toString();
+		if (!getProject().hasProperty("allowsnapshot") &&
+				version.toLowerCase().contains("snapshot".toLowerCase())) {
+			getLogger().quiet("Skipped git tagging as project version is snapshot: " + version +
+					", force tagging with option -Pallowsnaphot");
+			return;
+		}
+
 		Result result = Executor.execute("git rev-parse --abbrev-ref HEAD");
 		if (!result.isSuccessful()){
 			throw new GradleException("Could not determine current branch: " +
 					result.getError());
 		}
-
 		String branch = result.getOutput();
-		Project project = this.getProject();
-		if (!project.getProperties().containsKey("version")) {
-			throw new GradleException("Failed to determine branch name");
-		}
 
-		TagExtension extension = getProject().getExtensions().findByType(TagExtension.class);
-		String tagPrefix = extension.getTagPrefix();
-		String version = project.getProperties().get("version").toString();
-		String tagName = String.format("%s%s", tagPrefix, version);
-
-		String cmdCheckRemote = String.format("git log origin/%s..%s | cat", branch, branch);
-		result = Executor.execute(cmdCheckRemote);
+		String commandToCheckRemote = String.format("git log origin/%s..%s | cat", branch, branch);
+		result = Executor.execute(commandToCheckRemote);
 		if (!result.isSuccessful()) {
 			throw new GradleException(String.format("Could not diff between origin/%s and %s: ", branch, branch) +
 					result.getError());
@@ -52,16 +49,21 @@ public class Tag extends DefaultTask {
 					result.getOutput());
 		}
 
-		String cmdCreateTag = String.format("git tag -a -m \"%s\" %s", tagName, tagName);
-		result = Executor.execute(cmdCreateTag);
+		TagExtension extension = getProject().getExtensions().findByType(TagExtension.class);
+		String tagPrefix = extension.getTagPrefix();
+		String gitTagName = String.format("%s%s", tagPrefix, version);
+		String commandToCreateTag = String.format("git tag -a -m \"%s\" %s", gitTagName, gitTagName);
+		result = Executor.execute(commandToCreateTag);
 		if (!result.isSuccessful()) {
 			throw new GradleException("Could not tag: " + result.getError());
 		}
 
-		String cmdPushTag = String.format("git push origin %s", tagName);
-		result = Executor.execute(cmdPushTag);
+		String commandToPushTag = String.format("git push origin %s", gitTagName);
+		result = Executor.execute(commandToPushTag);
 		if (!result.isSuccessful()) {
 			throw new GradleException("Could not push tag: " + result.getError());
 		}
+
+		getLogger().quiet("Project repo is successfully tagged as: " + gitTagName);
 	}
 }
