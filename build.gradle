@@ -1,6 +1,6 @@
 plugins {
 	id 'java-gradle-plugin'
-//	id 'com.gradle.plugin-publish' version '0.9.7'
+	id 'com.gradle.plugin-publish' version '0.9.7'
 	id 'groovy'
 }
 
@@ -27,7 +27,7 @@ dependencies {
 
 //////////////////////////////////////////////////////
 
-version = '1.1.0'
+version = '1.1.1'
 
 gradlePlugin {
 	plugins {
@@ -38,16 +38,16 @@ gradlePlugin {
 	}
 }
 
-//pluginBundle {
-//	website = "https://plugins.gradle.org/plugin/com.es.em.am.tag"
-//	vcsUrl = 'am.em.es.com'
-//
-//	plugins {
-//		taggingPlugin {
-//			id = 'com.es.em.am.tag'
-//			displayName = 'Git auto tagging'
-//			description = "It creates git tag same as version value defined in build file"
-//			tags = ['git', 'tag']
-//		}
-//	}
-//}
+pluginBundle {
+	website = "https://plugins.gradle.org/plugin/com.es.em.am.tag"
+	vcsUrl = 'am.em.es.com'
+
+	plugins {
+		taggingPlugin {
+			id = 'com.es.em.am.tag'
+			displayName = 'Git auto tagging'
+			description = "It creates git tag same as version value defined in build file"
+			tags = ['git', 'tag']
+		}
+	}
+}

@@ -15,7 +15,8 @@ class MockTest extends Specification {
 	@Rule TemporaryFolder testProjectDir = new TemporaryFolder()
 	File buildFile
 	String version
-	String tagPrefix="test"
+	String tagPrefix="test-version"
+	String testLocalRepo
 
 	def setup() {
 		buildFile = testProjectDir.newFile('build.gradle')
@@ -27,6 +28,16 @@ class MockTest extends Specification {
                 tagPrefix = '${tagPrefix}'
             }            
         """
+
+		def testRemoteRepo = testProjectDir.newFolder("remote")
+		testLocalRepo = testProjectDir.newFolder("repo")
+		runBashCommand("git init ${testLocalRepo}")
+		runBashCommand("git --bare init ${testRemoteRepo}")
+		runBashCommand("git --git-dir ${testLocalRepo}/.git remote add origin ssh://localhost/${testLocalRepo}")
+		runBashCommand("touch ${testLocalRepo}/temp")
+		runBashCommand("git --git-dir ${testLocalRepo}/.git --work-tree=${testLocalRepo} add temp")
+		runBashCommand("git --git-dir ${testLocalRepo}/.git commit -m 'Init commit'")
+		runBashCommand("git --git-dir ${testLocalRepo}/.git push -u origin master")
 	}
 
 	def "can successfully tag"() {
@@ -38,7 +49,7 @@ class MockTest extends Specification {
 		when:
 		def result = GradleRunner.create()
 				.withProjectDir(testProjectDir.root)
-				.withArguments('tag')
+				.withArguments("tag", "-Pgitdir=${testLocalRepo}/.git")
 				.withPluginClasspath()
 				.build()
 		then:
@@ -55,7 +66,7 @@ class MockTest extends Specification {
 		when:
 		def result = GradleRunner.create()
 				.withProjectDir(testProjectDir.root)
-				.withArguments('tag')
+				.withArguments("tag", "-Pgitdir=${testLocalRepo}/.git")
 				.withPluginClasspath()
 				.build()
 		then:
@@ -72,7 +83,7 @@ class MockTest extends Specification {
 		when:
 		def result = GradleRunner.create()
 				.withProjectDir(testProjectDir.root)
-				.withArguments('tag', "-Pallowsnapshot")
+				.withArguments("tag", "-Pallowsnapshot", "-Pgitdir=${testLocalRepo}/.git")
 				.withPluginClasspath()
 				.build()
 		then:
@@ -84,6 +95,11 @@ class MockTest extends Specification {
 //		expect:
 //			1 == 1
 //	}
+
+	def runBashCommand(String command) {
+		def proc = ['bash', '-c', command].execute()
+		proc.waitForOrKill(5000)
+	}
 
 	def cleanup() {
 		def proc = ['bash', '-c', "git tag --delete ${tagPrefix}${version}"].execute()

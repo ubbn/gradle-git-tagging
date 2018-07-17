@@ -23,22 +23,28 @@ import com.es.em.am.gradle.plugin.tagging.util.Result;
 public class Tag extends DefaultTask {
 	@TaskAction
 	void tag() {
+		String gitExec = "git";
+		if (getProject().hasProperty("gitdir")) {
+			gitExec += " --git-dir " + getProject().property("gitdir");
+		}
+
 		String version = getProject().getVersion().toString();
 		if (!getProject().hasProperty("allowsnapshot") &&
 				version.toLowerCase().contains("snapshot".toLowerCase())) {
 			getLogger().quiet("Skipped git tagging as project version is snapshot: " + version +
-					", force tajagging with option -Pallowsnapshot");
+					", force tagging with option -Pallowsnapshot");
 			return;
 		}
 
-		Result result = Executor.execute("git rev-parse --abbrev-ref HEAD");
+		String commandToGetBranch = String.format("%s rev-parse --abbrev-ref HEAD", gitExec);
+		Result result = Executor.execute(commandToGetBranch);
 		if (!result.isSuccessful()){
 			throw new GradleException("Could not determine current branch: " +
 					result.getError());
 		}
 		String branch = result.getOutput();
 
-		String commandToCheckRemote = String.format("git log origin/%s..%s | cat", branch, branch);
+		String commandToCheckRemote = String.format("%s log origin/%s..%s | cat", gitExec, branch, branch);
 		result = Executor.execute(commandToCheckRemote);
 		if (!result.isSuccessful()) {
 			throw new GradleException(String.format("Could not diff between origin/%s and %s: ", branch, branch) +
@@ -52,13 +58,13 @@ public class Tag extends DefaultTask {
 		TagExtension extension = getProject().getExtensions().findByType(TagExtension.class);
 		String tagPrefix = extension.getTagPrefix();
 		String gitTagName = String.format("%s%s", tagPrefix, version);
-		String commandToCreateTag = String.format("git tag -a -m \"%s\" %s", gitTagName, gitTagName);
+		String commandToCreateTag = String.format("%s tag -a -m \"%s\" %s", gitExec, gitTagName, gitTagName);
 		result = Executor.execute(commandToCreateTag);
 		if (!result.isSuccessful()) {
 			throw new GradleException("Could not tag: " + result.getError());
 		}
 
-		String commandToPushTag = String.format("git push origin %s", gitTagName);
+		String commandToPushTag = String.format("%s push origin %s", gitExec, gitTagName);
 		result = Executor.execute(commandToPushTag);
 		if (!result.isSuccessful()) {
 			throw new GradleException("Could not push tag: " + result.getError());
