@@ -65,6 +65,10 @@ public class Tag extends DefaultTask {
 		}
 
 		String commandToPushTag = String.format("%s push origin %s", gitExec, gitTagName);
+		if (getProject().hasProperty("noHostKeyCheck")) {
+			String skipHostKeyCheck = "GIT_SSH_COMMAND=\"ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\"";
+			commandToPushTag = String.format("%s %s", skipHostKeyCheck, commandToPushTag);
+		}
 		result = Executor.execute(commandToPushTag);
 		if (!result.isSuccessful()) {
 			throw new GradleException("Could not push tag: " + result.getError());

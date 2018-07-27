@@ -29,6 +29,7 @@ class MockTest extends Specification {
             }            
         """
 
+		def noCheckHostKey = 'GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"'
 		def testRemoteRepo = testProjectDir.newFolder("remote")
 		testLocalRepo = testProjectDir.newFolder("repo")
 		runBashCommand("git init ${testLocalRepo}")
@@ -37,7 +38,7 @@ class MockTest extends Specification {
 		runBashCommand("touch ${testLocalRepo}/temp")
 		runBashCommand("git --git-dir ${testLocalRepo}/.git --work-tree=${testLocalRepo} add temp")
 		runBashCommand("git --git-dir ${testLocalRepo}/.git commit -m 'Init commit'")
-		runBashCommand("git --git-dir ${testLocalRepo}/.git push -u origin master")
+		runBashCommand("${noCheckHostKey} git --git-dir ${testLocalRepo}/.git push -u origin master")
 	}
 
 	def "can successfully tag"() {
@@ -49,7 +50,7 @@ class MockTest extends Specification {
 		when:
 		def result = GradleRunner.create()
 				.withProjectDir(testProjectDir.root)
-				.withArguments("tag", "-Pgitdir=${testLocalRepo}/.git")
+				.withArguments("tag", "-Pgitdir=${testLocalRepo}/.git", "-PnoHostKeyCheck")
 				.withPluginClasspath()
 				.build()
 		then:
@@ -66,7 +67,7 @@ class MockTest extends Specification {
 		when:
 		def result = GradleRunner.create()
 				.withProjectDir(testProjectDir.root)
-				.withArguments("tag", "-Pgitdir=${testLocalRepo}/.git")
+				.withArguments("tag", "-Pgitdir=${testLocalRepo}/.git", "-PnoHostKeyCheck")
 				.withPluginClasspath()
 				.build()
 		then:
@@ -83,7 +84,7 @@ class MockTest extends Specification {
 		when:
 		def result = GradleRunner.create()
 				.withProjectDir(testProjectDir.root)
-				.withArguments("tag", "-Pallowsnapshot", "-Pgitdir=${testLocalRepo}/.git")
+				.withArguments("tag", "-Pallowsnapshot", "-Pgitdir=${testLocalRepo}/.git", "-PnoHostKeyCheck")
 				.withPluginClasspath()
 				.build()
 		then:
