@@ -50,7 +50,7 @@ class MockTest extends Specification {
 		when:
 		def result = GradleRunner.create()
 				.withProjectDir(testProjectDir.root)
-				.withArguments("tag", "-Pgitdir=${testLocalRepo}/.git", "-PnoHostKeyCheck")
+				.withArguments("tag", "-PgitdiR=${testLocalRepo}/.git", "-PnoHostKeyCheck")
 				.withPluginClasspath()
 				.build()
 		then:
@@ -67,7 +67,7 @@ class MockTest extends Specification {
 		when:
 		def result = GradleRunner.create()
 				.withProjectDir(testProjectDir.root)
-				.withArguments("tag", "-Pgitdir=${testLocalRepo}/.git", "-PnoHostKeyCheck")
+				.withArguments("tag", "-PgitDIR=${testLocalRepo}/.git", "-PnoHostKeyCheck")
 				.withPluginClasspath()
 				.build()
 		then:

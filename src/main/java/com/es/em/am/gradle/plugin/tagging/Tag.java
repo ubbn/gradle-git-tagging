@@ -9,6 +9,8 @@
  */
 package com.es.em.am.gradle.plugin.tagging;
 
+import java.util.Optional;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
@@ -24,12 +26,13 @@ public class Tag extends DefaultTask {
 	@TaskAction
 	void tag() {
 		String gitExec = "git";
-		if (getProject().hasProperty("gitdir")) {
-			gitExec += " --git-dir " + getProject().property("gitdir");
+		Optional<String> gitDirProperty = getPropertyIgnoreCase("gitdir");
+		if (gitDirProperty.isPresent()) {
+			gitExec += " --git-dir " + getProject().property(gitDirProperty.get());
 		}
 
 		String version = getProject().getVersion().toString();
-		if (!getProject().hasProperty("allowsnapshot") &&
+		if (!getPropertyIgnoreCase("allowsnapshot").isPresent() &&
 				version.toLowerCase().contains("snapshot".toLowerCase())) {
 			getLogger().quiet("Skipped git tagging as project version is snapshot: " + version +
 					", force tagging with option -Pallowsnapshot");
@@ -49,8 +52,7 @@ public class Tag extends DefaultTask {
 		if (!result.isSuccessful()) {
 			throw new GradleException(String.format("Could not diff between origin/%s and %s: ", branch, branch) +
 					result.getError());
-		}
-		else if(!result.getOutput().trim().isEmpty()) {
+		} else if(!result.getOutput().trim().isEmpty()) {
 			throw new GradleException("Git local repository have unpushed commits: " +
 					result.getOutput());
 		}
@@ -65,7 +67,7 @@ public class Tag extends DefaultTask {
 		}
 
 		String commandToPushTag = String.format("%s push origin %s", gitExec, gitTagName);
-		if (getProject().hasProperty("noHostKeyCheck")) {
+		if (getPropertyIgnoreCase("noHostKeyCheck").isPresent()) {
 			String skipHostKeyCheck = "GIT_SSH_COMMAND=\"ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\"";
 			commandToPushTag = String.format("%s %s", skipHostKeyCheck, commandToPushTag);
 		}
@@ -75,5 +77,15 @@ public class Tag extends DefaultTask {
 		}
 
 		getLogger().quiet("Project repo is successfully tagged as: " + gitTagName);
+	}
+
+	private Optional<String> getPropertyIgnoreCase(String property) {
+		return getProject()
+				.getProperties()
+				.entrySet()
+				.stream()
+				.map(x -> x.getKey())
+				.filter(x -> x.equalsIgnoreCase(property))
+				.findFirst();
 	}
 }
