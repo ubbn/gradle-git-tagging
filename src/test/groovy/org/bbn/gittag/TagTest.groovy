@@ -1,4 +1,4 @@
-package com.testwithspring.master
+package org.bbn.gittag
 
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
@@ -7,10 +7,7 @@ import spock.lang.Specification
 
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
-/**
- * @author eulzbay
- */
-class MockTest extends Specification {
+class TagTest extends Specification {
 
 	@Rule TemporaryFolder testProjectDir = new TemporaryFolder()
 	File buildFile
@@ -100,13 +97,5 @@ class MockTest extends Specification {
 	def runBashCommand(String command) {
 		def proc = ['bash', '-c', command].execute()
 		proc.waitForOrKill(5000)
-	}
-
-	def cleanup() {
-		def proc = ['bash', '-c', "git tag --delete ${tagPrefix}${version}"].execute()
-		proc = ['bash', '-c', "git push --delete origin ${tagPrefix}${version}"].execute()
-		proc.waitForOrKill(5000)
-		def output = proc.in.text
-		println output
 	}
 }

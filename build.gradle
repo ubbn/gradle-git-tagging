@@ -16,31 +16,20 @@ dependencies {
 	)
 }
 
-//test {
-//	useJUnit {
-//		includeCategories 'com.testwithspring.master.UnitTest'
-//	}
-//	testLogging {
-//		showStandardStreams = true
-//	}
-//}
-
-//////////////////////////////////////////////////////
-
 version = '1.2.0'
 
 gradlePlugin {
 	plugins {
 		taggingPlugin {
-			id = 'com.es.em.am.tag'
-			implementationClass = 'com.es.em.am.gradle.plugin.tagging.TagPlugin'
+			id = 'com.bbn.gittag'
+			implementationClass = 'TagPlugin'
 		}
 	}
 }
 
 pluginBundle {
-	website = "https://plugins.gradle.org/plugin/com.es.em.am.tag"
-	vcsUrl = 'am.em.es.com'
+	website = "https://plugins.gradle.org/plugin/org.bbn.gittag"
+	vcsUrl = 'bbn.com'
 
 	plugins {
 		taggingPlugin {
